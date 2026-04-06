@@ -71,7 +71,7 @@ def process_uploaded_new_form_data(
         
         base_cols = [c for c in df.columns if c not in defect_cols]
         # Preserve important base columns
-        important_base_keywords = ['NGÀY', 'SỐ MÁY', 'CA SX', 'SỐ THỨ TỰ', 'GHI CHÚ', 'THÔNG TIN CUỘN', 'HỢP ĐỒNG', 'NHÀ CUNG CẤP']
+        important_base_keywords = ['NGÀY', 'SỐ MÁY', 'CA SX', 'SỐ THỨ TỰ', 'GHI CHÚ', 'THÔNG TIN CUỘN', 'HỢP ĐỒNG', 'NHÀ CUNG CẤP', 'ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'CHÊNH LỆCH']
         final_base = [c for c in base_cols if any(k in str(c).upper() for k in important_base_keywords)]
         
         # 2. Melt Data

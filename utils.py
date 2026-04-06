@@ -166,7 +166,8 @@ def identify_complex_defect_cols(df_columns: Union[pd.Index, List[str]]) -> List
         'NHÀ CUNG CẤP', 'MÁY TRÁNG', 'HỢP ĐỒNG', 'LỆNH SẢN XUẤT', 
         'SỐ MÉT', 'SỐ KG', 'SỐ TÚI QUI', 'CHÊNH LỆCH', 'GHI CHÚ', 'UNNAMED',
         'TỔNG SẢN PHẨM', 'SẢN PHẨM ĐẠT', 'SẢN PHẨM KHÔNG ĐẠT', 'TỔNG SP LỖI',
-        'TỔNG PHẾ', 'TỈ LỆ', 'TỶ LỆ', '%', 'XẾP MÁY', 'PHÂN LOẠI'
+        'TỔNG PHẾ', 'TỈ LỆ', 'TỶ LỆ', '%', 'XẾP MÁY', 'PHÂN LOẠI',
+        'ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'SỐ CÁI'
     ]
     
     defect_cols = []
@@ -239,7 +240,7 @@ def identify_defect_columns(df_columns: List[str], manual_anchor_name: Optional[
                 include_anchor_column = True
                 break
 
-    blacklist_keywords = ['STT', 'MÉT', 'KG', 'TRỌNG LƯỢNG', 'SIZE', 'THỰC TẾ', 'MÁY', 'NGÀY', 'CA', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ', '%', 'TỶ LỆ', 'ĐẠT', 'CHÊNH LỆCH', 'TỔNG SỐ', 'TỔNG PHẾ', 'TỔNG CỘNG', 'TỔNG SP']
+    blacklist_keywords = ['STT', 'MÉT', 'KG', 'TRỌNG LƯỢNG', 'SIZE', 'THỰC TẾ', 'MÁY', 'NGÀY', 'CA', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ', '%', 'TỶ LỆ', 'ĐẠT', 'CHÊNH LỆCH', 'TỔNG SỐ', 'TỔNG PHẾ', 'TỔNG CỘNG', 'TỔNG SP', 'ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'SỐ CÁI']
     base_keywords = ['NGÀY', 'SỐ MÁY', 'CA', 'STT', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ']
 
     for idx, col in enumerate(df_columns):
@@ -349,6 +350,12 @@ def process_single_dataframe(
                 
         base_cols = ['NGÀY', 'SỐ MÁY', 'CA SX', 'SỐ THỨ TỰ CUỘN', 'HỢP ĐỒNG', 'MÃ HÀNG', 'MÁY DỆT', 'MÁY TRÁNG', note_col]
         existing_base = [c for c in base_cols if c in df.columns]
+        
+        # Bổ sung giữ lại các cột mở rộng mới (như Đồng hồ, Thẻ vật tư)
+        extended_keywords = ['ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'CHÊNH LỆCH']
+        for col in df.columns:
+            if col not in existing_base and any(kw in str(col).upper() for kw in extended_keywords):
+                existing_base.append(col)
         
         total_col = 'TỔNG SẢN PHẨM' 
         for col in df.columns:
