@@ -467,7 +467,8 @@ if st.session_state.nf_data_processed and st.session_state.nf_df_result is not N
                                         valid_ext_cols.append((c, num_series))
                             
                             if valid_ext_cols:
-                                with st.expander(f"⏱️ Tổng Hợp Đối Chiếu Đồng Hồ / Vật Tư ({len(target_labels)} Cuộn)", expanded=True):
+                                target_len = len(target_rolls_list) if 'target_rolls_list' in locals() else len(df_roll['SỐ THỨ TỰ CUỘN'].unique())
+                                with st.expander(f"⏱️ Tổng Hợp Đối Chiếu Đồng Hồ / Vật Tư ({target_len} Cuộn)", expanded=True):
                                     for i in range(0, len(valid_ext_cols), 3):
                                         cols = st.columns(3)
                                         for j in range(3):
