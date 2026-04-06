@@ -2,6 +2,7 @@ CURRENT_MODEL_NAME = "gemini-2.5-flash"
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.express as px
 import io
 import sys
