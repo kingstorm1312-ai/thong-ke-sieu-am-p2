@@ -459,18 +459,22 @@ if st.session_state.nf_data_processed and st.session_state.nf_df_result is not N
                         ext_cols = [c for c in df_roll.columns if any(kw in str(c).upper() for kw in ext_keywords)]
                         if ext_cols:
                             unique_rows = df_roll.drop_duplicates(subset=['Unique_Row_Key'])
-                            valid_ext_cols = [c for c in ext_cols if '%' not in str(c) and pd.api.types.is_numeric_dtype(unique_rows[c])]
+                            valid_ext_cols = []
+                            for c in ext_cols:
+                                if '%' not in str(c):
+                                    num_series = pd.to_numeric(unique_rows[c].astype(str).str.replace(',', '').str.replace(r'[^\d\.\-]', '', regex=True), errors='coerce')
+                                    if num_series.notnull().any():
+                                        valid_ext_cols.append((c, num_series))
                             
                             if valid_ext_cols:
                                 with st.expander(f"⏱️ Tổng Hợp Đối Chiếu Đồng Hồ / Vật Tư ({len(target_labels)} Cuộn)", expanded=True):
-                                    ext_sums = unique_rows[valid_ext_cols].sum()
                                     for i in range(0, len(valid_ext_cols), 3):
                                         cols = st.columns(3)
                                         for j in range(3):
                                             if i + j < len(valid_ext_cols):
-                                                c_name = valid_ext_cols[i + j]
-                                                val = ext_sums[c_name]
-                                                if pd.isna(val): val = 0.0
+                                                c_name, num_series = valid_ext_cols[i + j]
+                                                val = num_series.sum()
+                                                if pd.isna(val) or val == float('inf') or val == float('-inf'): val = 0.0
                                                 c_str = str(c_name).replace("\\", "/").replace('"', "'").replace('\n', ' ').replace('\r', ' ')
                                                 c_clean = f"Tổng {c_str}"
                                                 cols[j].metric(c_clean, f"{float(val):,.1f}")
@@ -478,8 +482,8 @@ if st.session_state.nf_data_processed and st.session_state.nf_df_result is not N
                         st.markdown("#### 1. So Sánh & Tham Chiếu")
                         group_keys = [c for c in id_cols if c in df_roll.columns]
                         roll_stats_df = df_roll.drop_duplicates(subset=['Unique_Row_Key']).groupby(group_keys, dropna=False).agg({'KPI_Roll_Production':'sum','KPI_Roll_Fail':'sum'}).reset_index()
-                        roll_stats_df['Rate'] = (roll_stats_df['KPI_Roll_Fail'] / roll_stats_df['KPI_Roll_Production'] * 100).fillna(0)
-                        roll_stats_df['Display_Name'] = roll_stats_df.apply(lambda r: f"C.{r['SỐ THỨ TỰ CUỘN']} (M{r['SỐ MÁY']})", axis=1)
+                        roll_stats_df['Rate'] = (roll_stats_df['KPI_Roll_Fail'] / roll_stats_df['KPI_Roll_Production'] * 100).fillna(0).replace([float('inf'), float('-inf')], 0)
+                        roll_stats_df['Display_Name'] = roll_stats_df.apply(lambda r: f"C.{r['SỐ THỨ TỰ CUỘN']} (M{r['SỐ MÁY']})".replace("\\", "/"), axis=1)
                         
                         current_period_avg = (grand_fail_raw / grand_production * 100) if grand_production > 0 else 0
                         st.plotly_chart(visualizer.draw_comparative_bar_with_reference(roll_stats_df, current_period_avg), use_container_width=True)
