@@ -141,6 +141,8 @@ with st.sidebar:
         with st.spinner("Đang tải bản cập nhật mới nhất..."):
             try:
                 import subprocess
+                # Xác định thư mục gốc của project (nơi chứa .git)
+                project_dir = os.path.dirname(os.path.abspath(__file__))
                 # Chia nhỏ token để bypass Github Secret Scanner (Vì đây là token read-only cố ý chèn)
                 p1, p2 = "github_pat_", "11BY77EHQ0pwUEJilA"
                 p3, p4 = "Wgu1_Z9yH4oVAKqa07rI", "yAtYnPXEBegNxk"
@@ -148,7 +150,11 @@ with st.sidebar:
                 tk = p1 + p2 + p3 + p4 + p5 + p6
                 repo_url = f"https://{tk}@github.com/kingstorm1312-ai/thong-ke-sieu-am-p2.git"
                 
-                result = subprocess.run(["git", "pull", repo_url, "main"], capture_output=True, text=True, check=True)
+                result = subprocess.run(
+                    ["git", "pull", repo_url, "main"],
+                    capture_output=True, text=True, check=True,
+                    cwd=project_dir  # QUAN TRỌNG: chạy đúng thư mục chứa .git
+                )
                 st.success("Cập nhật thành công! Vui lòng tải lại trang (F5).")
                 with st.expander("Chi tiết cập nhật"):
                     st.code(result.stdout)
