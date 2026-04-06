@@ -451,6 +451,24 @@ if st.session_state.nf_data_processed and st.session_state.nf_df_result is not N
                         k2.metric("Tổng Lỗi", f"{total_fail_group:,.0f}")
                         k3.metric("Tỷ Lệ Lỗi (Gia Quyền)", f"{weighted_fail_rate:.2f}%")
                         
+                        # --- HIỂN THỊ TỔNG HỢP CỰC BỘ (ĐỒNG HỒ/ĐỊNH MỨC) KHI CHỌN NHIỀU CUỘN ---
+                        ext_keywords = ['ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'CHÊNH LỆCH']
+                        ext_cols = [c for c in df_roll.columns if any(kw in str(c).upper() for kw in ext_keywords)]
+                        if ext_cols:
+                            unique_rows = df_roll.drop_duplicates(subset=['Unique_Row_Key'])
+                            valid_ext_cols = [c for c in ext_cols if '%' not in str(c) and pd.api.types.is_numeric_dtype(unique_rows[c])]
+                            
+                            if valid_ext_cols:
+                                with st.expander(f"⏱️ Tổng Hợp Đối Chiếu Đồng Hồ / Vật Tư ({len(target_labels)} Cuộn)", expanded=True):
+                                    ext_sums = unique_rows[valid_ext_cols].sum()
+                                    for i in range(0, len(valid_ext_cols), 3):
+                                        cols = st.columns(3)
+                                        for j in range(3):
+                                            if i + j < len(valid_ext_cols):
+                                                c_name = valid_ext_cols[i + j]
+                                                val = ext_sums[c_name]
+                                                cols[j].metric(f"Tổng {c_name}", f"{val:,.1f}")
+                        
                         st.markdown("#### 1. So Sánh & Tham Chiếu")
                         group_keys = [c for c in id_cols if c in df_roll.columns]
                         roll_stats_df = df_roll.drop_duplicates(subset=['Unique_Row_Key']).groupby(group_keys, dropna=False).agg({'KPI_Roll_Production':'sum','KPI_Roll_Fail':'sum'}).reset_index()
