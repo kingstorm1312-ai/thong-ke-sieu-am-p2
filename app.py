@@ -454,6 +454,21 @@ if st.session_state.data_processed and st.session_state.df_result is not None:
                          r_fail = r0['KPI_Roll_Fail']
                          st.info(f"Đang xem chi tiết Cuộn {r0['SỐ THỨ TỰ CUỘN']} (Lỗi: {r_fail/r_total*100:.2f}%)")
                          
+                         # --- HIỂN THỊ CÁC CỘT MỞ RỘNG (ĐỒNG HỒ/ĐỊNH MỨC) ---
+                         ext_keywords = ['ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'CHÊNH LỆCH']
+                         ext_cols = [c for c in r0.index if any(kw in str(c).upper() for kw in ext_keywords) and pd.notnull(r0[c]) and str(r0[c]).strip() != ""]
+                         if ext_cols:
+                             with st.expander("⏱️ Thông số đối chiếu Đồng hồ / Vật tư", expanded=True):
+                                 for i in range(0, len(ext_cols), 3):
+                                     cols = st.columns(3)
+                                     for j in range(3):
+                                         if i + j < len(ext_cols):
+                                             c_name = ext_cols[i + j]
+                                             val = r0[c_name]
+                                             if isinstance(val, (float, np.float64, np.float32)): val = round(float(val), 3)
+                                             cols[j].metric(c_name, str(val))
+
+                         
                          df_roll_view = df_roll.groupby('Loại Lỗi')['Số Lượng Lỗi'].sum().reset_index()
                          df_roll_view = df_roll_view[df_roll_view['Số Lượng Lỗi'] > 0]
                          
