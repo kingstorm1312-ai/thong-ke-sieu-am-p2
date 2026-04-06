@@ -379,6 +379,8 @@ if st.session_state.nf_data_processed and st.session_state.nf_df_result is not N
                                              if isinstance(val, (float, np.float64, np.float32)): val = round(float(val), 3)
                                              c_short = utils.shorten_ext_col_name(c_name)
                                              v_clean = str(val).replace("\\", "/")
+                                             if '%' in str(c_name):
+                                                 v_clean = f"{float(val):.2f}%"
                                              cols[j].metric(c_short, v_clean)
 
                          
