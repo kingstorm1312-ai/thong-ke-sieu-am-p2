@@ -135,6 +135,23 @@ with st.sidebar:
             else:
                 st.warning("Không tìm thấy dữ liệu chi tiết lỗi nào vượt ngưỡng.")
 
+    st.divider()
+    st.header("5. Hệ Thống")
+    if st.button("🔄 Cập Nhật Ứng Dụng", help="Tự động tải về phiên bản mới nhất từ Github."):
+        with st.spinner("Đang tải bản cập nhật mới nhất..."):
+            try:
+                import subprocess
+                result = subprocess.run(["git", "pull", "origin", "main"], capture_output=True, text=True, check=True)
+                st.success("Cập nhật thành công! Vui lòng tải lại trang (F5).")
+                with st.expander("Chi tiết cập nhật"):
+                    st.code(result.stdout)
+            except subprocess.CalledProcessError as e:
+                st.error("Cập nhật thất bại. Vui lòng kiểm tra lại token hoặc kết nối.")
+                with st.expander("Chi tiết lỗi"):
+                    st.code(e.stderr)
+            except Exception as e:
+                st.error(f"Lỗi hệ thống: {e}")
+
 # --- FRONTEND (GỌI VISUALIZER) ---
 if st.session_state.data_processed and st.session_state.df_result is not None:
     df_raw = st.session_state.df_result
