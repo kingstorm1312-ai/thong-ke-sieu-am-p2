@@ -466,7 +466,10 @@ if st.session_state.data_processed and st.session_state.df_result is not None:
                                              c_name = ext_cols[i + j]
                                              val = r0[c_name]
                                              if isinstance(val, (float, np.float64, np.float32)): val = round(float(val), 3)
-                                             cols[j].metric(c_name, str(val))
+                                             # Fix JSON Serialization Streamlit Error
+                                             c_clean = str(c_name).replace("\\", "/").replace('"', "'").replace("\n", " ").replace("\r", " ")
+                                             v_clean = str(val).replace("\\", "/")
+                                             cols[j].metric(c_clean, v_clean)
 
                          
                          df_roll_view = df_roll.groupby('Loại Lỗi')['Số Lượng Lỗi'].sum().reset_index()
@@ -633,7 +636,10 @@ if st.session_state.data_processed and st.session_state.df_result is not None:
                                             if i + j < len(valid_ext_cols):
                                                 c_name = valid_ext_cols[i + j]
                                                 val = ext_sums[c_name]
-                                                cols[j].metric(f"Tổng {c_name}", f"{val:,.1f}")
+                                                if pd.isna(val): val = 0.0
+                                                c_str = str(c_name).replace("\\", "/").replace('"', "'").replace('\n', ' ').replace('\r', ' ')
+                                                c_clean = f"Tổng {c_str}"
+                                                cols[j].metric(c_clean, f"{float(val):,.1f}")
                         
                         st.markdown("#### 1. So Sánh & Tham Chiếu")
                         group_keys = [c for c in id_cols if c in df_roll.columns]
