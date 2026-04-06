@@ -175,7 +175,7 @@ def shorten_ext_col_name(col_name: str) -> str:
         ('CHÊNH LỆCH THÀNH PHẨM THỰC TẾ VÀ THÀNH PHẨM THEO ĐỒNG HỒ',  'CL: TP thực tế - TP đồng hồ'),
         ('CHÊNH LỆCH THÀNH PHẨM SỐ MÉT THẺ VẬT TƯ',           'CL: TP thẻ vật tư - TP đồng hồ'),
         ('CHÊNH LỆCH GIỮA SỐ TÚI QUI RA TỪ SỐ MÉT CUỘN VÀ SỐ TÚI QUI RA', 'CL: Túi qui từ Mét - từ KG'),
-        ('CHÊNH LỆCH GIỮA SỐ TÚI SẢN XUẤT THỰC TẾ VÀ SỐ TÚI QUI',        'CL: Túi SX thực tế - Túi qui'),
+        ('CHÊNH LỆCH GIỮA SỐ TÚI SẢN XUẤT THỰC TẾ VÀ SỐ TÚI QUI',        'CL: Túi SX thực tế - Túi qui (mét cuộn)'),
         ('CHÊNH LỆCH GIỮA SỐ TÚI',                             'Chênh lệch Túi'),
         ('CHÊNH LỆCH',                                          'Chênh lệch'),
         ('ĐỒNG HỒ',                                             'Đồng hồ'),
