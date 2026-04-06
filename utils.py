@@ -156,6 +156,41 @@ def clean_number_advanced(val: Any) -> float:
         return 0.0
     except: return 0.0
 
+def shorten_ext_col_name(col_name: str) -> str:
+    """Rút gọn tên cột mở rộng (Đồng hồ/Vật tư) cho hiển thị trên st.metric."""
+    c = str(col_name).strip()
+    c_upper = c.upper()
+    
+    # Bảng ánh xạ theo thứ tự ưu tiên (cụ thể trước, tổng quát sau)
+    mappings = [
+        ('SỐ MÉT/CUỘN THEO ĐỒNG HỒ',                          'Mét/Cuộn (ĐH)'),
+        ('SỐ MÉT CUỘN THEO ĐỒNG HỒ',                           'Mét/Cuộn (ĐH)'),
+        ('%SỐ MÉT THIẾU',                                       '% Mét thiếu (ĐH-TVT)'),
+        ('% SỐ MÉT THIẾU',                                      '% Mét thiếu (ĐH-TVT)'),
+        ('SỐ MÉT THIẾU GIỮA ĐỒNG HỒ VÀ THẺ VẬT TƯ',          'Mét thiếu (ĐH-TVT)'),
+        ('SỐ MÉT THIẾU',                                        'Mét thiếu (ĐH-TVT)'),
+        ('SỐ CÁI THEO ĐỊNH MỨC TỪ ĐỒNG HỒ',                   'Số cái (ĐM từ ĐH)'),
+        ('SỐ CÁI THEO ĐỊNH MỨC',                                'Số cái (ĐM)'),
+        ('CHÊNH LỆCH THÀNH PHẨM THỰC TẾ VÀ THÀNH PHẨM THEO ĐỒNG HỒ',  'CL TP thực tế vs ĐH'),
+        ('CHÊNH LỆCH THÀNH PHẨM SỐ MÉT THẺ VẬT TƯ',           'CL TP (TVT vs ĐH)'),
+        ('CHÊNH LỆCH GIỮA SỐ TÚI QUI RA TỪ SỐ MÉT CUỘN VÀ SỐ TÚI QUI RA', 'CL túi qui (Cuộn vs ĐH)'),
+        ('CHÊNH LỆCH GIỮA SỐ TÚI SẢN XUẤT THỰC TẾ VÀ SỐ TÚI QUI',        'CL túi SX vs Qui'),
+        ('CHÊNH LỆCH GIỮA SỐ TÚI',                             'CL túi qui'),
+        ('CHÊNH LỆCH',                                          'Chênh lệch'),
+        ('ĐỒNG HỒ',                                             'Đồng hồ'),
+        ('ĐỊNH MỨC',                                             'Định mức'),
+        ('THẺ VẬT TƯ',                                          'Thẻ vật tư'),
+    ]
+    
+    for keyword, short in mappings:
+        if keyword in c_upper:
+            return short
+    
+    # Fallback: cắt ngắn nếu quá 30 ký tự
+    if len(c) > 30:
+        return c[:27] + "..."
+    return c
+
 def identify_complex_defect_cols(df_columns: Union[pd.Index, List[str]]) -> List[str]:
     """
     Xác định cột lỗi cho file format mới (Header 2 tầng đã gộp).

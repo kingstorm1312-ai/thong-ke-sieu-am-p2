@@ -466,10 +466,9 @@ if st.session_state.data_processed and st.session_state.df_result is not None:
                                              c_name = ext_cols[i + j]
                                              val = r0[c_name]
                                              if isinstance(val, (float, np.float64, np.float32)): val = round(float(val), 3)
-                                             # Fix JSON Serialization Streamlit Error
-                                             c_clean = str(c_name).replace("\\", "/").replace('"', "'").replace("\n", " ").replace("\r", " ")
+                                             c_short = utils.shorten_ext_col_name(c_name)
                                              v_clean = str(val).replace("\\", "/")
-                                             cols[j].metric(c_clean, v_clean)
+                                             cols[j].metric(c_short, v_clean)
 
                          
                          df_roll_view = df_roll.groupby('Loại Lỗi')['Số Lượng Lỗi'].sum().reset_index()
@@ -642,9 +641,8 @@ if st.session_state.data_processed and st.session_state.df_result is not None:
                                                 c_name, num_series = valid_ext_cols[i + j]
                                                 val = num_series.sum()
                                                 if pd.isna(val) or val == float('inf') or val == float('-inf'): val = 0.0
-                                                c_str = str(c_name).replace("\\", "/").replace('"', "'").replace('\n', ' ').replace('\r', ' ')
-                                                c_clean = f"Tổng {c_str}"
-                                                cols[j].metric(c_clean, f"{float(val):,.1f}")
+                                                c_short = utils.shorten_ext_col_name(c_name)
+                                                cols[j].metric(f"Σ {c_short}", f"{float(val):,.1f}")
                         
                         st.markdown("#### 1. So Sánh & Tham Chiếu")
                         group_keys = [c for c in id_cols if c in df_roll.columns]
