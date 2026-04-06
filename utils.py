@@ -240,7 +240,9 @@ def identify_defect_columns(df_columns: List[str], manual_anchor_name: Optional[
                 include_anchor_column = True
                 break
 
-    blacklist_keywords = ['STT', 'MÉT', 'KG', 'TRỌNG LƯỢNG', 'SIZE', 'THỰC TẾ', 'MÁY', 'NGÀY', 'CA', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ', '%', 'TỶ LỆ', 'ĐẠT', 'CHÊNH LỆCH', 'TỔNG SỐ', 'TỔNG PHẾ', 'TỔNG CỘNG', 'TỔNG SP', 'ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'SỐ CÁI']
+    blacklist_keywords = ['STT', 'MÉT', 'KG', 'TRỌNG LƯỢNG', 'SIZE', 'THỰC TẾ', 'MÁY', 'NGÀY', 'CA', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ', '%', 'TỶ LỆ', 'ĐẠT', 'CHÊNH LỆCH', 'TỔNG SỐ', 'TỔNG PHẾ', 'TỔNG CỘNG', 'TỔNG SP', 'ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'SỐ CÁI', 'XẾP GIỮ', 'XẾP MÁY', 'QUI RA', 'SỐ TÚI QUI']
+    # Các keyword mở rộng: nếu tên cột chứa 1 trong số này, LUÔN bị blacklist bất kể bắt đầu bằng số hay không
+    force_blacklist_keywords = ['ĐỒNG HỒ', 'ĐỊNH MỨC', 'THẺ VẬT TƯ', 'XẾP GIỮ', 'XẾP MÁY', 'QUI RA', 'SỐ TÚI QUI', 'SỐ CÁI']
     base_keywords = ['NGÀY', 'SỐ MÁY', 'CA', 'STT', 'HỢP ĐỒNG', 'MÃ HÀNG', 'GHI CHÚ']
 
     for idx, col in enumerate(df_columns):
@@ -254,6 +256,9 @@ def identify_defect_columns(df_columns: List[str], manual_anchor_name: Optional[
         if "%" in c_upper: continue
         if "QUAI" in c_upper: continue
         if "5-10MM" in c_upper: continue 
+
+        # Kiểm tra force-blacklist trước (các cột mở rộng luôn bị loại)
+        if any(fb in c_upper for fb in force_blacklist_keywords): continue
 
         is_blacklisted = False
         for bl in blacklist_keywords:
